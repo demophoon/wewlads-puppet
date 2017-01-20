@@ -1,22 +1,99 @@
-motd_selection=$(( ( RANDOM % 10 )  + 1 ))
+#!/bin/bash
 
-case $motd_selection in
-    [1-5])
-        echo "   _   _   _   _   _   _   _  "
-        echo "  / \ / \ / \ / \ / \ / \ / \ "
-        echo " ( w | e | w | l | a | d | s )"
-        echo "  \_/ \_/ \_/ \_/ \_/ \_/ \_/ "
-    ;;
-
-    [6-10])
-        echo "                                 ___                __            "
-        echo "                                /\_ \              /\ \           "
-        echo "  __  __  __     __   __  __  __\//\ \      __     \_\ \    ____  "
-        echo " /\ \/\ \/\ \  /'__`\/\ \/\ \/\ \ \ \ \   /'__`\   /'_` \  /',__\ "
-        echo " \ \ \_/ \_/ \/\  __/\ \ \_/ \_/ \ \_\ \_/\ \L\.\_/\ \L\ \/\__, `\"
-        echo "  \ \___x___/'\ \____\\ \___x___/' /\____\ \__/.\_\ \___,_\/\____/"
-        echo "   \/__//__/   \/____/ \/__//__/   \/____/\/__/\/_/\/__,_ /\/___/ "
-    ;;
+motd_selection=$(( ( RANDOM % 5 )  + 1 ))
 
 echo ""
-echo "Welcome $(whoami)"
+case $motd_selection in
+    1)
+        echo '   _   _   _   _   _   _   _  '
+        echo '  / \ / \ / \ / \ / \ / \ / \ '
+        echo ' ( w | e | w | l | a | d | s )'
+        echo '  \_/ \_/ \_/ \_/ \_/ \_/ \_/ '
+    ;;
+
+    2)
+	echo '                        _           _     '
+	echo '                       | |         | |    '
+	echo ' __      _______      _| | __ _  __| |___ '
+	echo ' \ \ /\ / / _ \ \ /\ / / |/ _` |/ _` / __|'
+	echo '  \ V  V /  __/\ V  V /| | (_| | (_| \__ \'
+	echo '   \_/\_/ \___| \_/\_/ |_|\__,_|\__,_|___/'
+    ;;
+
+    3)
+	echo '                                        /$$                 /$$          '
+	echo '                                       | $$                | $$          '
+	echo '  /$$  /$$  /$$  /$$$$$$  /$$  /$$  /$$| $$  /$$$$$$   /$$$$$$$  /$$$$$$$'
+	echo ' | $$ | $$ | $$ /$$__  $$| $$ | $$ | $$| $$ |____  $$ /$$__  $$ /$$_____/'
+	echo ' | $$ | $$ | $$| $$$$$$$$| $$ | $$ | $$| $$  /$$$$$$$| $$  | $$|  $$$$$$ '
+	echo ' | $$ | $$ | $$| $$_____/| $$ | $$ | $$| $$ /$$__  $$| $$  | $$ \____  $$'
+	echo ' |  $$$$$/$$$$/|  $$$$$$$|  $$$$$/$$$$/| $$|  $$$$$$$|  $$$$$$$ /$$$$$$$/'
+	echo '  \_____/\___/  \_______/ \_____/\___/ |__/ \_______/ \_______/|_______/ '
+    ;;
+
+    4)
+	echo ' _   _, ____,  _   _, __,     ____, ____,  ____, '
+	echo '(-|  | (-|_,  (-|  | (-|     (-/_| (-|  \ (-(__  '
+	echo ' _|/\|, _|__,  _|/\|, _|__,  _/  |, _|__/  ____) '
+	echo '(      (      (      (      (      (      (      '
+    ;;
+
+    5)
+	echo ':::       ::: :::::::::: :::       ::: :::            :::     :::::::::   ::::::::  '
+	echo ':+:       :+: :+:        :+:       :+: :+:          :+: :+:   :+:    :+: :+:    :+: '
+	echo '+:+       +:+ +:+        +:+       +:+ +:+         +:+   +:+  +:+    +:+ +:+        '
+	echo '+#+  +:+  +#+ +#++:++#   +#+  +:+  +#+ +#+        +#++:++#++: +#+    +:+ +#++:++#++ '
+	echo '+#+ +#+#+ +#+ +#+        +#+ +#+#+ +#+ +#+        +#+     +#+ +#+    +#+        +#+ '
+	echo ' #+#+# #+#+#  #+#         #+#+# #+#+#  #+#        #+#     #+# #+#    #+# #+#    #+# '
+	echo '  ###   ###   ##########   ###   ###   ########## ###     ### #########   ########  '
+    ;;
+esac
+
+echo ""
+
+USER=`whoami`
+HOSTNAME=`uname -n`
+
+MEMORY1=`/opt/puppetlabs/bin/facter memoryfree_mb`
+MEMORY2=`/opt/puppetlabs/bin/facter memorysize_mb`
+PSA=`ps -Afl | wc -l`
+
+# time of day
+HOUR=$(date +"%H")
+if [ $HOUR -lt 12  -a $HOUR -ge 0 ]
+then    TIME="morning"
+elif [ $HOUR -lt 17 -a $HOUR -ge 12 ] 
+then    TIME="afternoon"
+else 
+    TIME="evening"
+fi
+
+#System uptime
+uptime=`cat /proc/uptime | cut -f1 -d.`
+upDays=$((uptime/60/60/24))
+upHours=$((uptime/60/60%24))
+upMins=$((uptime/60%60))
+upSecs=$((uptime%60))
+
+#System load
+LOAD1=`cat /proc/loadavg | awk {'print $1'}`
+LOAD5=`cat /proc/loadavg | awk {'print $2'}`
+LOAD15=`cat /proc/loadavg | awk {'print $3'}`
+
+echo "==========================================================================="
+echo " - Hostname............: $HOSTNAME"
+echo " - Release.............: `cat /etc/redhat-release`"
+echo " - Users...............: Currently $(users | wc -w) user(s) logged on"
+echo "==========================================================================="
+
+if [ $EUID -eq 0 ]; then
+
+echo " - Current user........: ${USER}"
+echo " - CPU usage...........: ${LOAD1}, ${LOAD5}, ${LOAD15}"
+echo " - Memory free.........: ${MEMORY1} / ${MEMORY2}"
+echo " - Swap in use.........: $(free -m | tail -n 1 | awk '{print $3}') MB"
+echo " - Processes...........: ${PSA} running"
+echo " - System uptime.......: ${upDays} days $upHours hours $upMins minutes $upSecs seconds"
+echo "==========================================================================="
+
+fi

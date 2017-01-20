@@ -24,7 +24,8 @@ class wewlads::base (
     revision => 'master',
   }
 
-  class { 'motd':
-    template => 'wewlads/motd.erb',
+  file { '/usr/local/bin/dynmotd':
+    mode     => '0755',
+    content => template('wewlads/motd.erb'),
   }
 }
