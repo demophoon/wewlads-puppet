@@ -15,9 +15,10 @@ class wewlads::base (
     minute  => ['0', '30'],
   }
 
-  vcsrepo { "${apply_module_path}/wewlads-repo":
+  vcsrepo { "${apply_module_path}/wewlads":
     ensure   => latest,
     provider => git,
     source   => 'https://github.com/demophoon/wewlads-puppet.git',
+    revision => 'master',
   }
 }
