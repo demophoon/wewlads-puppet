@@ -23,4 +23,8 @@ class wewlads::base (
     source   => 'https://github.com/demophoon/wewlads-puppet.git',
     revision => 'master',
   }
+
+  class { 'motd':
+    template => 'wewlads/motd.erb',
+  }
 }
