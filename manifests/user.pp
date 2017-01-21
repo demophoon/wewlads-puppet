@@ -2,7 +2,7 @@ define wewlads::user (
   Enum[present, absent] $ensure = present,
   String $username = $title,
   String $ssh_key_type = 'ssh-rsa',
-  Optional[String] $ssh_key,
+  Optional[String] $ssh_key = undef,
   String $shell = '/bin/bash',
   Boolean $staff = false,
 
